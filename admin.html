@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickTop Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            max-width: 450px;
+            margin: 100px auto;
+            background: white;
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.5s ease;
+        }
+
+        .dashboard {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 40px;
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .login-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .login-title h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .login-title p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .success {
+            color: #27ae60;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+        }
+
+        .output {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #333;
+            white-space: pre-wrap;
+            display: none;
+            line-height: 1.6;
+        }
+
+        .output.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-copy {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            flex: 0 0 auto;
+            padding: 14px 24px;
+            width: auto;
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            margin-top: 30px;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #434343 0%, #000000 100%);
+        }
+
+        .inline-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .inline-fields {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN CONTAINER -->
+    <div id="loginContainer" class="login-container">
+        <div class="login-title">
+            <div class="logo">🔐</div>
+            <h1>QuickTop Admin</h1>
+            <p>Secure Access Portal</p>
+        </div>
+
+        <div class="form-group">
+            <label for="adminPassword">Administrator Password</label>
+            <input 
+                type="password" 
+                id="adminPassword" 
+                placeholder="Enter your admin password"
+                onkeypress="if(event.key==='Enter') login()"
+            >
+        </div>
+
+        <button onclick="login()" id="loginBtn">
+            Sign In
+        </button>
+
+        <p id="loginError" class="error"></p>
+
+        <div class="back-link">
+            <a href="index.html">← Back to Homepage</a>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="dashboard">
+        <div class="header">
+            <div>
+                <h1>⚡ QuickTop Admin</h1>
+                <p style="opacity: 0.9; margin-top: 5px;">Management Dashboard</p>
+            </div>
+            <button class="btn-logout" onclick="logout()" style="width: auto; padding: 12px 30px;">
+                Logout
+            </button>
+        </div>
+
+        <div class="card-grid">
+            <!-- SEND NOTIFICATION CARD -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="card-icon">📢</span>
+                    Push Notification
+                </div>
+
+                <div class="form-group">
+                    <label for="notifTitle">Notification Title</label>
+                    <input 
+                        type="text" 
+                        id="notifTitle" 
+                        placeholder="e.g., New Feature Released!"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="notifMessage">Message</label>
+                    <textarea 
+                        id="notifMessage" 
+                        placeholder="Write your notification message here..."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="targetAudience">Target Audience</label>
+                    <select id="targetAudience">
+                        <option value="all">All Users</option>
+                        <option value="active">Active Users Only</option>
+                        <option value="new">New Users Only</option>
+                    </select>
+                </div>
+
+                <button onclick="sendNotification()" id="notifBtn">
+                    Send Notification
+                </button>
+
+                <div id="notifOutput" class="output"></div>
+            </div>
+
+            <!-- GENERATE REFERRAL CODE CARD -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="card-icon">🎟️</span>
+                    Referral Code Generator
+                </div>
+
+                <div class="form-group">
+                    <label for="discountPercent">Discount Percentage</label>
+                    <select id="discountPercent">
+                        <option value="5">5% Off</option>
+                        <option value="10">10% Off</option>
+                        <option value="15">15% Off</option>
+                        <option value="20">20% Off</option>
+                        <option value="25">25% Off</option>
+                    </select>
+                </div>
+
+                <div class="inline-fields">
+                    <div class="form-group">
+                        <label for="expiryDate">Expiry Date</label>
+                        <input type="date" id="expiryDate">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maxUses">Max Uses</label>
+                        <input 
+                            type="number" 
+                            id="maxUses" 
+                            placeholder="e.g., 100"
+                            min="1"
+                        >
+                    </div>
+                </div>
+
+                <button onclick="generateReferralCode()" id="refBtn">
+                    Generate Code
+                </button>
+
+                <div class="button-group" style="display: none;" id="refButtonGroup">
+                    <button class="btn-copy" onclick="copyReferralCode()">
+                        📋 Copy Code
+                    </button>
+                </div>
+
+                <div id="refOutput" class="output"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "https://quicktop-backend.onrender.com";
+        let authToken = null;
+        let currentReferralCode = "";
+
+        // LOGIN FUNCTION
+        async function login() {
+            const password = document.getElementById("adminPassword").value;
+            const errorEl = document.getElementById("loginError");
+            const loginBtn = document.getElementById("loginBtn");
+
+            if (!password) {
+                errorEl.textContent = "Please enter your password";
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="loading-spinner"></span> Authenticating...';
+            errorEl.textContent = "";
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    authToken = data.token;
+                    document.getElementById("loginContainer").style.display = "none";
+                    document.getElementById("dashboard").style.display = "block";
+                } else {
+                    errorEl.textContent = data.message || "Authentication failed";
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                errorEl.textContent = "Unable to connect to server. Please try again.";
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = "Sign In";
+            }
+        }
+
+        // LOGOUT FUNCTION
+        function logout() {
+            if (confirm("Are you sure you want to logout?")) {
+                authToken = null;
+                document.getElementById("dashboard").style.display = "none";
+                document.getElementById("loginContainer").style.display = "block";
+                document.getElementById("adminPassword").value = "";
+                document.getElementById("loginError").textContent = "";
+                
+                // Clear all outputs
+                document.getElementById("notifOutput").classList.remove("show");
+                document.getElementById("refOutput").classList.remove("show");
+                document.getElementById("refButtonGroup").style.display = "none";
+                
+                // Clear form fields
+                document.getElementById("notifTitle").value = "";
+                document.getElementById("notifMessage").value = "";
+                document.getElementById("expiryDate").value = "";
+                document.getElementById("maxUses").value = "";
+            }
+        }
+
+        // SEND NOTIFICATION FUNCTION
+        async function sendNotification() {
+            const title = document.getElementById("notifTitle").value;
+            const message = document.getElementById("notifMessage").value;
+            const target = document.getElementById("targetAudience").value;
+            const outputEl = document.getElementById("notifOutput");
+            const notifBtn = document.getElementById("notifBtn");
+
+            if (!title || !message) {
+                outputEl.textContent = "❌ Error: Title and message are required";
+                outputEl.classList.add("show");
+                return;
+            }
+
+            notifBtn.disabled = true;
+            notifBtn.innerHTML = '<span class="loading-spinner"></span> Sending...';
+            outputEl.classList.add("show");
+            outputEl.textContent = "⏳ Sending notification...";
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/notifications`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        body: message
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    outputEl.textContent = `✅ Success!\n\n${data.message}\n\nTarget: ${target}`;
+                    outputEl.className = "output show success";
+                    
+                    // Clear form
+                    document.getElementById("notifTitle").value = "";
+                    document.getElementById("notifMessage").value = "";
+                } else {
+                    outputEl.textContent = `❌ Failed: ${data.message}`;
+                }
+            } catch (error) {
+                console.error("Notification error:", error);
+                outputEl.textContent = "❌ Network error: Unable to send notification";
+            } finally {
+                notifBtn.disabled = false;
+                notifBtn.innerHTML = "Send Notification";
+            }
+        }
+
+        // GENERATE REFERRAL CODE FUNCTION
+        async function generateReferralCode() {
+            const discount = document.getElementById("discountPercent").value;
+            const expiry = document.getElementById("expiryDate").value;
+            const maxUses = document.getElementById("maxUses").value;
+            const outputEl = document.getElementById("refOutput");
+            const refBtn = document.getElementById("refBtn");
+            const buttonGroup = document.getElementById("refButtonGroup");
+
+            refBtn.disabled = true;
+            refBtn.innerHTML = '<span class="loading-spinner"></span> Generating...';
+            outputEl.classList.add("show");
+            outputEl.textContent = "⏳ Generating referral code...";
+            buttonGroup.style.display = "none";
+
+            // Generate code format
+            currentReferralCode = `QT${discount}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/referral-codes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        code: currentReferralCode,
+                        discount_percentage: parseInt(discount),
+                        is_single_use: maxUses === "1",
+                        expiry_date: expiry || null,
+                        owner_user_id: null
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    outputEl.textContent = 
+                        `✅ Referral Code Generated Successfully!\n\n` +
+                        `Code: ${currentReferralCode}\n` +
+                        `Discount: ${discount}%\n` +
+                        `Expiry: ${expiry || "No expiration"}\n` +
+                        `Max Uses: ${maxUses || "Unlimited"}`;
+                    outputEl.className = "output show success";
+                    buttonGroup.style.display = "flex";
+                } else {
+                    outputEl.textContent = `❌ Failed: ${data.message}`;
+                    currentReferralCode = "";
+                }
+            } catch (error) {
+                console.error("Referral code error:", error);
+                outputEl.textContent = "❌ Network error: Unable to generate code";
+                currentReferralCode = "";
+            } finally {
+                refBtn.disabled = false;
+                refBtn.innerHTML = "Generate Code";
+            }
+        }
+
+        // COPY REFERRAL CODE FUNCTION
+        function copyReferralCode() {
+            if (!currentReferralCode) {
+                alert("No code to copy!");
+                return;
+            }
+
+            navigator.clipboard.writeText(currentReferralCode).then(() => {
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = "✅ Copied!";
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            }).catch(() => {
+                alert("Failed to copy code");
+            });
+        }
+    </script>
+</body>
+</html>
